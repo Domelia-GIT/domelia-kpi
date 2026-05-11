@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>Domelia.sk – KPI Report 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:#0a0e1a;color:#e8eaf0;min-height:100vh;padding:32px 24px}
+  .logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#4ade80}
+  .subtitle{font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:.8px;margin:4px 0 8px}
+  .date-badge{background:#111827;border:1px solid #1f2d47;border-radius:6px;padding:4px 12px;font-size:12px;color:#6b7a99;display:inline-block;margin-bottom:24px}
+  .tabs{display:flex;gap:4px;margin-bottom:24px;background:#111827;padding:4px;border-radius:10px;border:1px solid #1f2d47;flex-wrap:wrap;width:fit-content}
+  .tab{padding:8px 16px;border-radius:7px;border:none;background:transparent;color:#6b7a99;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .tab.active{background:#4ade80;color:#0a0e1a;font-weight:700}
+  .panel{display:none}.panel.active{display:block}
+  .section-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin:24px 0 12px}
+  .section-title:first-child{margin-top:0}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .kpi-grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .kpi-card{background:#111827;border:1px solid #1f2d47;border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,#4ade80)}
+  .kpi-label{font-size:11px;color:#6b7a99;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;font-weight:500}
+  .kpi-value{font-family:'Syne',sans-serif;font-size:clamp(17px,3vw,25px);font-weight:800;color:#f0f4ff;line-height:1;margin-bottom:4px;white-space:nowrap}
+  .kpi-sub{font-size:11px;color:#4b5680;font-weight:300;line-height:1.4}
+  .kpi-note{font-size:11px;color:var(--accent,#4ade80);margin-top:6px;font-weight:500}
+  .block{background:#111827;border:1px solid #1f2d47;border-radius:12px;padding:20px;overflow-x:auto}
+  .data-table{width:100%;border-collapse:collapse;font-size:13px}
+  .data-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#4b5680;padding:8px 12px;border-bottom:1px solid #1f2d47;font-weight:600;white-space:nowrap}
+  .data-table td{padding:9px 12px;border-bottom:1px solid #0f1625;color:#c8cee0}
+  .data-table tr:last-child td{border-bottom:none}
+  .data-table .num{text-align:right;font-family:'Syne',sans-serif;font-weight:600;color:#f0f4ff;white-space:nowrap}
+  .data-table .hl{color:#4ade80 !important;font-weight:700}
+  .data-table .dim{color:#4b5680;font-size:11px}
+  .bar-bg{width:72px;height:4px;background:#1f2d47;border-radius:2px;display:inline-block;vertical-align:middle}
+  .bar-fill{height:4px;border-radius:2px;background:#4ade80;display:block}
+  .badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap}
+  .bg{background:rgba(74,222,128,.12);color:#4ade80}
+  .bb{background:rgba(96,165,250,.12);color:#60a5fa}
+  .ba{background:rgba(251,191,36,.12);color:#fbbf24}
+  .insight{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:14px 16px;font-size:13px;color:#a7f3c8;margin-top:16px;line-height:1.7}
+  .insight strong{color:#4ade80}
+  .footnote{font-size:11px;color:#4b5680;margin-top:10px;line-height:1.5}
+  .spark-row{display:flex;align-items:flex-end;gap:4px;height:40px}
+  .spark-col{flex:1;text-align:center}
+  .spark-bar{border-radius:2px 2px 0 0;display:block;width:100%;transition:opacity .2s}
+  .spark-bar:hover{opacity:1 !important}
+  .spark-label{font-size:9px;color:#4b5680;margin-top:3px}
+  @media(max-width:640px){.kpi-grid,.kpi-grid-3{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="logo">domelia.sk</div>
+<div class="subtitle">Marketing KPI Report</div>
+<div class="date-badge">📅 Dáta k 11. mája 2026 · YTD 2026 (1.1.–11.5.) + GSC 16 mes.</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="sw('platforma',this)">🏠 Platforma</button>
+  <button class="tab" onclick="sw('revenue',this)">💶 Revenue</button>
+  <button class="tab" onclick="sw('marketing',this)">📈 Marketing</button>
+  <button class="tab" onclick="sw('sluzby',this)">🗂 Služby</button>
+  <button class="tab" onclick="sw('retention',this)">🔄 Retention</button>
+</div>
+
+<!-- TAB 1: PLATFORMA -->
+<div class="panel active" id="tab-platforma">
+
+  <div class="section-title">Používatelia — celkovo (všetky časy)</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Helperi (opatrovatelia...)</div>
+      <div class="kpi-value">137 496</div>
+      <div class="kpi-sub">celkovo registrovaných</div>
+      <div class="kpi-note">100 948 aktívnych · 119 deaktiv.</div>
+    </div>
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Domácnosti (rodiny)</div>
+      <div class="kpi-value">53 225</div>
+      <div class="kpi-sub">celkovo registrovaných</div>
+      <div class="kpi-note">50 516 aktívnych · 72 deaktiv.</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Agentúry</div>
+      <div class="kpi-value">8 550</div>
+      <div class="kpi-sub">celkovo registrovaných</div>
+      <div class="kpi-note">8 229 aktívnych · 16 deaktiv.</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">Celkom používateľov</div>
+      <div class="kpi-value">199 271</div>
+      <div class="kpi-sub">všetky typy spolu</div>
+      <div class="kpi-note">159 693 aktívnych (~80 %)</div>
+    </div>
+  </div>
+
+  <div class="section-title">Aktivita 2026 YTD (1.1. – 11.5.2026, 131 dní)</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Použ. / deň — silné dni</div>
+      <div class="kpi-value">600–700+</div>
+      <div class="kpi-sub">peak dni (bežný pracovný deň)</div>
+      <div class="kpi-note">priemer YTD ~266 · 34 870 celkovo</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Použ. / deň — jeden deň (5.5.)</div>
+      <div class="kpi-value">638</div>
+      <div class="kpi-sub">GA4 ukážkový deň: Organic 265 + Direct 264 + Paid 63</div>
+      <div class="kpi-note">priemer YTD ~266 · skreslený nízkymi dňami</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Noví registrovaní 2026</div>
+      <div class="kpi-value">1 663</div>
+      <div class="kpi-sub">Helper 705 · Rodina 879 · Agency 79</div>
+      <div class="kpi-note">1 534 overených emailom</div>
+    </div>
+    <div class="kpi-card" style="--accent:#f87171">
+      <div class="kpi-label">Konverzia reg. → platba</div>
+      <div class="kpi-value">~35 %</div>
+      <div class="kpi-sub">592 kupujúcich / 1 663 registrácií</div>
+      <div class="kpi-note">silný platobný zámer</div>
+    </div>
+  </div>
+
+  <div class="section-title">Predplatné 2026 YTD — objednávky, revenue &amp; all time</div>
+  <div class="block">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Typ predplatného</th>
+          <th class="num">Obj. 2026</th>
+          <th class="num">Revenue 2026</th>
+          <th class="num">Priem. cena</th>
+          <th class="num">Obj. all time</th>
+          <th class="num">Revenue all time</th>
+          <th>Podiel 2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge bg">FAMILY_1M</span> <span class="dim">Rodina mes.</span></td>
+          <td class="num hl">342</td><td class="num">3 078 €</td><td class="num">9,00 €</td>
+          <td class="num dim">17 605</td><td class="num dim">157 033 €</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:72px"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge bg">FAMILY_3M</span> <span class="dim">Rodina 3-mes.</span></td>
+          <td class="num hl">202</td><td class="num">2 424 €</td><td class="num">12,00 €</td>
+          <td class="num dim">11 431</td><td class="num dim">137 005 €</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:56px"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge bb">SITTER_1M</span> <span class="dim">Helper mes.</span></td>
+          <td class="num">97</td><td class="num">290 €</td><td class="num">2,99 €</td>
+          <td class="num dim">40 861</td><td class="num dim">6 614 €</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:7px;background:#60a5fa"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge ba">AGENCY_1M</span> <span class="dim">Agentúra mes.</span></td>
+          <td class="num">7</td><td class="num">420 €</td><td class="num">60,00 €</td>
+          <td class="num dim">537</td><td class="num dim">31 880 €</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:10px;background:#fbbf24"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge ba">AGENCY_12M</span> <span class="dim">Agentúra ročné</span></td>
+          <td class="num">1</td><td class="num hl">600 €</td><td class="num">600,00 €</td>
+          <td class="num dim">15</td><td class="num dim">8 058 €</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:14px;background:#fbbf24"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge bb">SITTER_12M</span> <span class="dim">Helper ročné</span></td>
+          <td class="num">2</td><td class="num">70 €</td><td class="num">35,00 €</td>
+          <td class="num dim">31</td><td class="num dim">1 085 €</td>
+          <td></td>
+        </tr>
+        <tr style="border-top:1px solid #2a3550">
+          <td><strong>SPOLU</strong></td>
+          <td class="num hl">651</td><td class="num hl">6 882 €</td><td class="num">10,57 €</td>
+          <td class="num hl">85 510</td><td class="num hl">403 432 €</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="footnote">* SITTER_1M all-time priem. 0,16 €/obj. — odporúča sa overiť (historické promo/testové transakcie?)</div>
+  </div>
+
+  <div class="section-title">Správy &amp; engagement na platforme</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#f87171">
+      <div class="kpi-label">Otvorené správy celkovo</div>
+      <div class="kpi-value">130 013</div>
+      <div class="kpi-sub">neprečítané thready na platforme</div>
+      <div class="kpi-note">Rodiny 82 987 · Helperi 44 999</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Nové thready 2026</div>
+      <div class="kpi-value">2 927</div>
+      <div class="kpi-sub">správy od 1.1.2026</div>
+      <div class="kpi-note">~22 / deň priemer</div>
+    </div>
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Aktívni použ. 2026</div>
+      <div class="kpi-value">4 137</div>
+      <div class="kpi-sub">prihlásení aspoň 1× v roku</div>
+      <div class="kpi-note">Helper 2719 · Rodina 1312 · Agency 105</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">Unikátni kupujúci 2026</div>
+      <div class="kpi-value">592</div>
+      <div class="kpi-sub">unikátnych platiacich účtov</div>
+      <div class="kpi-note">Rodina 504 · Helper 83 · Agency 5</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Platforma v číslach:</strong> 199 000+ registrovaných, 80 % aktívnych. Denná návštevnosť (GA4) je <strong>~266 použ. / deň</strong>. Konverzný pomer nových registrácií → predplatné je <strong>~35 %</strong> — silný signál platenej motivácie. Celkové tržby od spustenia: <strong>403 432 €</strong>, v 2026 doteraz <strong>6 882 €</strong>.
+  </div>
+</div>
+
+<!-- TAB 2: REVENUE -->
+<div class="panel" id="tab-revenue">
+
+  <div class="section-title">Revenue — celkový prehľad</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Tržby 2026 YTD</div>
+      <div class="kpi-value">6 882 €</div>
+      <div class="kpi-sub">651 platených objednávok</div>
+      <div class="kpi-note">priemer 10,57 € / objednávka</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Tržby all time</div>
+      <div class="kpi-value">403 432 €</div>
+      <div class="kpi-sub">85 510 platených objednávok</div>
+      <div class="kpi-note">priemer 4,72 € / objednávka</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Mes. priemer 2026</div>
+      <div class="kpi-value">1 721 €</div>
+      <div class="kpi-sub">jan–apr (4 plné mesiace)</div>
+      <div class="kpi-note">najsilnejší: apríl 1 958 €</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">Rastový trend (feb→apr)</div>
+      <div class="kpi-value">+49 %</div>
+      <div class="kpi-sub">1 311 € → 1 958 €</div>
+      <div class="kpi-note">pozitívny rastový trend</div>
+    </div>
+  </div>
+
+  <div class="section-title">Mesačné tržby 2026</div>
+  <div class="block">
+    <div id="sparkWrap" style="margin-bottom:16px"></div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Mesiac</th><th class="num">FAMILY</th><th class="num">HELPER</th><th class="num">AGENCY</th><th class="num">SPOLU</th><th>Bar</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Január</td><td class="num">1 440 €</td><td class="num">115,80 €</td><td class="num">120 €</td><td class="num hl">1 675,80 €</td><td><div class="bar-bg"><div class="bar-fill" style="width:69px"></div></div></td></tr>
+        <tr><td>Február</td><td class="num">1 143 €</td><td class="num">47,84 €</td><td class="num">120 €</td><td class="num">1 310,84 €</td><td><div class="bar-bg"><div class="bar-fill" style="width:54px"></div></div></td></tr>
+        <tr><td>Marec</td><td class="num">1 347 €</td><td class="num">38,87 €</td><td class="num">60 €</td><td class="num">1 445,87 €</td><td><div class="bar-bg"><div class="bar-fill" style="width:59px"></div></div></td></tr>
+        <tr><td>Apríl</td><td class="num">1 083 €</td><td class="num">154,60 €</td><td class="num">720 €</td><td class="num hl">1 957,60 €</td><td><div class="bar-bg"><div class="bar-fill" style="width:80px"></div></div></td></tr>
+        <tr><td>Máj <span class="dim">(do 11.)</span></td><td class="num">468 €</td><td class="num">23,92 €</td><td class="num">—</td><td class="num">491,92 €</td><td><div class="bar-bg"><div class="bar-fill" style="width:20px;background:#4b5680"></div></div></td></tr>
+        <tr style="border-top:1px solid #2a3550">
+          <td><strong>YTD SPOLU</strong></td>
+          <td class="num hl">5 481 €</td><td class="num">381 €</td><td class="num">1 020 €</td>
+          <td class="num hl">6 882,03 €</td><td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Revenue podľa segmentu — all time</div>
+  <div class="kpi-grid-3">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">FAMILY (domácnosti)</div>
+      <div class="kpi-value">310 741 €</div>
+      <div class="kpi-sub">31 201 obj. · 77 % z tržieb</div>
+      <div class="kpi-note">hlavný revenue segment</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">HELPER (opatrovatelia)</div>
+      <div class="kpi-value">50 589 €</div>
+      <div class="kpi-sub">53 504 obj. · 13 % z tržieb</div>
+      <div class="kpi-note">nízka priem. cena / obj.</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">AGENCY (agentúry)</div>
+      <div class="kpi-value">41 581 €</div>
+      <div class="kpi-sub">802 obj. · 10 % z tržieb</div>
+      <div class="kpi-note">priem. 51,85 € / obj. — B2B LTV</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Revenue insighty:</strong><br>
+    • <strong>FAMILY segment</strong> tvorí 77 % tržieb — primárny platobný segment<br>
+    • <strong>FAMILY_3M</strong> (12 €) má lepšiu cenu ako FAMILY_1M (9 €) — priestor pre upsell<br>
+    • <strong>AGENCY_12M</strong> = najvyššia hodnota / objednávku (600 €) — B2B s vysokou LTV<br>
+    • Apríl 2026 najsilnejší mesiac roka (+49 % vs február) — pozitívny rastový trend<br>
+    • SITTER_1M all-time priem. 0,16 €/obj. — treba preskúmať (historické promo/testové dáta?)
+  </div>
+</div>
+
+<!-- TAB 3: MARKETING -->
+<div class="panel" id="tab-marketing">
+
+  <div class="section-title">Návštevnosť — GA4 (1.1. – 11.5.2026, 131 dní)</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Použ. / deň — silné dni</div>
+      <div class="kpi-value">600–700+</div>
+      <div class="kpi-sub">peak dni (bežný pracovný deň) · GA4</div>
+      <div class="kpi-note">priemer YTD ~266 · 34 870 celkovo</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Ukážkový deň — 5.5.2026</div>
+      <div class="kpi-value">638</div>
+      <div class="kpi-sub">Organic 265 · Direct 264 · Paid 63 · iné 46</div>
+      <div class="kpi-note">priemer YTD ~266 · skreslený nízkymi dňami</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Vracajúci sa použ.</div>
+      <div class="kpi-value">8 459</div>
+      <div class="kpi-sub">YTD · 24 % z celku</div>
+      <div class="kpi-note">priem. čas na webe 5 min 15 s</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">GA4 kľúčové udalosti</div>
+      <div class="kpi-value">3 902</div>
+      <div class="kpi-sub">registration events YTD</div>
+      <div class="kpi-note">774 purchase events · 4,45 % konv.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Google Search Console — organická viditeľnosť</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Kliknutia 2026 YTD</div>
+      <div class="kpi-value">76 465</div>
+      <div class="kpi-sub">organické vyhľadávanie (GSC)</div>
+      <div class="kpi-note">~593 kliknutí / deň</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Zobrazenia 2026 YTD</div>
+      <div class="kpi-value">827 320</div>
+      <div class="kpi-sub">organické vyhľadávanie (GSC)</div>
+      <div class="kpi-note">~6 412 zobrazení / deň</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">CTR priemer (16 mes.)</div>
+      <div class="kpi-value">10,6 %</div>
+      <div class="kpi-sub">veľmi dobrý výsledok</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">Priem. pozícia (16 mes.)</div>
+      <div class="kpi-value">9,5</div>
+      <div class="kpi-sub">v Google vyhľadávaní</div>
+    </div>
+  </div>
+
+  <div class="section-title">Akvizícia — kanály GA4 YTD 2026</div>
+  <div class="block">
+    <table class="data-table">
+      <thead>
+        <tr><th>Kanál</th><th class="num">Použ.</th><th class="num">Noví</th><th class="num">Vracajúci</th><th class="num">Priem. čas</th><th class="num">Konv. %</th><th>Podiel</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="hl">Organic Search</td><td class="num">16 579</td><td class="num">15 370</td><td class="num">3 364</td><td class="num">4:06</td><td class="num">3,99 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:72px"></div></div></td></tr>
+        <tr><td>Direct</td><td class="num">6 133</td><td class="num">5 198</td><td class="num">2 882</td><td class="num">11:30</td><td class="num">5,17 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:27px"></div></div></td></tr>
+        <tr><td>Paid Search</td><td class="num">5 504</td><td class="num">5 418</td><td class="num">1 154</td><td class="num">4:13</td><td class="num">4,47 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:24px"></div></div></td></tr>
+        <tr><td>Unassigned</td><td class="num">2 727</td><td class="num">2 627</td><td class="num">477</td><td class="num">4:15</td><td class="num">5,51 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:12px"></div></div></td></tr>
+        <tr><td>Cross-network</td><td class="num">2 305</td><td class="num">2 298</td><td class="num">334</td><td class="num">2:37</td><td class="num">3,90 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:10px"></div></div></td></tr>
+        <tr><td>Organic Social</td><td class="num">779</td><td class="num">758</td><td class="num">73</td><td class="num">1:54</td><td class="num">6,74 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:3px"></div></div></td></tr>
+        <tr><td>Paid Social</td><td class="num">449</td><td class="num">427</td><td class="num">75</td><td class="num">1:35</td><td class="num">3,60 %</td><td></td></tr>
+        <tr><td>Referral</td><td class="num">292</td><td class="num">273</td><td class="num">56</td><td class="num">6:09</td><td class="num">6,85 %</td><td></td></tr>
+        <tr><td>Display</td><td class="num">132</td><td class="num">132</td><td class="num">14</td><td class="num">1:05</td><td class="num">0,76 %</td><td></td></tr>
+        <tr style="border-top:1px solid #2a3550">
+          <td><strong>CELKOVO</strong></td><td class="num hl">34 870</td><td class="num hl">32 505</td><td class="num hl">8 459</td><td class="num">5:15</td><td class="num hl">4,45 %</td><td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Top hľadané výrazy (GSC — 16 mesiacov)</div>
+  <div class="block">
+    <table class="data-table">
+      <thead><tr><th>Výraz</th><th class="num">Kliknutia</th><th class="num">Zobrazenia</th><th class="num">CTR</th><th class="num">Pozícia</th></tr></thead>
+      <tbody>
+        <tr><td>domelia</td><td class="num hl">53 650</td><td class="num">74 847</td><td class="num">71,7 %</td><td class="num">1.2</td></tr>
+        <tr><td>domelia opatrovanie seniorov</td><td class="num">15 211</td><td class="num">18 539</td><td class="num">82,1 %</td><td class="num">1.1</td></tr>
+        <tr><td>domelia sk</td><td class="num">12 987</td><td class="num">18 748</td><td class="num">69,3 %</td><td class="num">1.0</td></tr>
+        <tr><td>hladam opatrovatelku pre seniora</td><td class="num">2 298</td><td class="num">8 369</td><td class="num">27,5 %</td><td class="num">1.8</td></tr>
+        <tr><td>opatrovanie seniorov</td><td class="num">2 097</td><td class="num">15 376</td><td class="num">13,6 %</td><td class="num">2.0</td></tr>
+        <tr><td>hladam surne opatrovatelku</td><td class="num">1 996</td><td class="num">18 622</td><td class="num">10,7 %</td><td class="num">2.9</td></tr>
+        <tr><td>strazenie deti brigada</td><td class="num">2 402</td><td class="num">3 927</td><td class="num">61,2 %</td><td class="num">1.3</td></tr>
+        <tr><td>24h opatrovanie na slovensku</td><td class="num">1 590</td><td class="num">7 924</td><td class="num">20,1 %</td><td class="num">4.7</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Zariadenia &amp; geografické rozloženie (GSC 16 mes.)</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80"><div class="kpi-label">📱 Mobil</div><div class="kpi-value">296 906</div><div class="kpi-sub">kliknutí · 84 % podiel</div></div>
+    <div class="kpi-card" style="--accent:#60a5fa"><div class="kpi-label">🖥 Desktop</div><div class="kpi-value">45 618</div><div class="kpi-sub">kliknutí · 13 % podiel</div></div>
+    <div class="kpi-card" style="--accent:#4ade80"><div class="kpi-label">🇸🇰 Slovensko</div><div class="kpi-value">330 412</div><div class="kpi-sub">kliknutí · 94 % podiel</div></div>
+    <div class="kpi-card" style="--accent:#60a5fa"><div class="kpi-label">🇦🇹 Rakúsko</div><div class="kpi-value">5 189</div><div class="kpi-sub">diaspora / opatrovatelia</div></div>
+    <div class="kpi-card" style="--accent:#fbbf24"><div class="kpi-label">🇨🇿 Česko</div><div class="kpi-value">3 546</div><div class="kpi-sub">blízky trh</div></div>
+    <div class="kpi-card" style="--accent:#a78bfa"><div class="kpi-label">🇩🇪 Nemecko</div><div class="kpi-value">2 301</div><div class="kpi-sub">diaspora</div></div>
+  </div>
+
+  <div class="insight">
+    <strong>Marketing v číslach:</strong> 48 % nových GA4 použ. z Organic Search. <strong>Direct kanál</strong> strávi 11,5 min — najlojálnejší segment. <strong>Referral + Organic Social</strong> majú najvyššiu konverziu (6,85 % / 6,74 %) — nedocenené kanály. 84 % návštev z mobilu — mobilná UX je kritická.
+  </div>
+</div>
+
+<!-- TAB 4: SLUŽBY -->
+<div class="panel" id="tab-sluzby">
+
+  <div class="section-title">Profily a ponuky — all time vs 2026 YTD</div>
+  <div class="block">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Kategória</th>
+          <th class="num">Profilov all time</th>
+          <th class="num">Ponúk all time</th>
+          <th class="num">Konv. profil→ponuka</th>
+          <th class="num">Profilov 2026</th>
+          <th class="num">Ponúk 2026</th>
+          <th>Podiel (profily)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>👶 Babysitting / opatr. detí</td>
+          <td class="num hl">33 752</td><td class="num">7 466</td><td class="num">22,1 %</td>
+          <td class="num">133</td><td class="num">80</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:79px"></div></div></td>
+        </tr>
+        <tr>
+          <td>🏠 Domáce práce / upratovanie</td>
+          <td class="num hl">27 983</td><td class="num">7 993</td><td class="num">28,6 %</td>
+          <td class="num">223</td><td class="num">97</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:65px"></div></div></td>
+        </tr>
+        <tr>
+          <td>👴 Opatr. seniorov / ŤZP</td>
+          <td class="num">10 555</td><td class="num hl">5 255</td><td class="num hl">49,8 %</td>
+          <td class="num">214</td><td class="num hl">177</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:25px"></div></div></td>
+        </tr>
+        <tr>
+          <td>📚 Doučovanie</td>
+          <td class="num">10 337</td><td class="num">1 390</td><td class="num">13,4 %</td>
+          <td class="num">35</td><td class="num">8</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:24px"></div></div></td>
+        </tr>
+        <tr>
+          <td>🔧 Handyman / opravy</td>
+          <td class="num">2 459</td><td class="num">856</td><td class="num">34,8 %</td>
+          <td class="num">23</td><td class="num">21</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:6px"></div></div></td>
+        </tr>
+        <tr>
+          <td>💅 Wellness &amp; krása</td>
+          <td class="num">1 083</td><td class="num">63</td><td class="num">5,8 %</td>
+          <td class="num">12</td><td class="num">1</td>
+          <td><div class="bar-bg"><div class="bar-fill" style="width:3px"></div></div></td>
+        </tr>
+        <tr style="border-top:1px solid #2a3550">
+          <td><strong>SPOLU</strong></td>
+          <td class="num hl">86 169</td><td class="num hl">23 023</td><td class="num">26,7 %</td>
+          <td class="num hl">640</td><td class="num hl">384</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Celkový objem platformy</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Profilov helperov celkovo</div>
+      <div class="kpi-value">86 169</div>
+      <div class="kpi-sub">vytvorených od spustenia</div>
+      <div class="kpi-note">640 nových v 2026 YTD</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Inzerátov / ponúk celkovo</div>
+      <div class="kpi-value">23 023</div>
+      <div class="kpi-sub">vytvorených od spustenia</div>
+      <div class="kpi-note">384 nových v 2026 YTD</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Konverzia profil → ponuka</div>
+      <div class="kpi-value">26,7 %</div>
+      <div class="kpi-sub">z profilov má aktívny inzerát</div>
+      <div class="kpi-note">priestor na zlepšenie onboardingu</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">Nových ponúk / deň (2026)</div>
+      <div class="kpi-value">~2,9</div>
+      <div class="kpi-sub">384 ponúk za 131 dní</div>
+      <div class="kpi-note">~4,9 nových profilov / deň</div>
+    </div>
+  </div>
+
+  <div class="section-title">Top stránky — organická návštevnosť (GSC 16 mes.)</div>
+  <div class="block">
+    <table class="data-table">
+      <thead><tr><th>Stránka</th><th class="num">Kliknutia</th><th class="num">Zobrazenia</th><th class="num">CTR</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">/ (homepage)</td><td class="num">60 574</td><td class="num">245 884</td><td class="num">24,6 %</td></tr>
+        <tr><td>/ponuka-prace/opatrovanie-seniorov</td><td class="num">43 349</td><td class="num">507 672</td><td class="num">8,5 %</td></tr>
+        <tr><td>/ponuka-prace/upratovanie</td><td class="num">23 994</td><td class="num">397 372</td><td class="num">6,0 %</td></tr>
+        <tr><td>/ponuka-prace/opatrovanie-deti</td><td class="num">16 490</td><td class="num">231 460</td><td class="num">7,1 %</td></tr>
+        <tr><td>/ponuka-prace/upratovanie/bratislava</td><td class="num">6 708</td><td class="num">173 560</td><td class="num">3,9 %</td></tr>
+        <tr><td>/doucovanie</td><td class="num">2 231</td><td class="num">153 092</td><td class="num">1,5 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight">
+    <strong>Objem platformy — USP čísla:</strong> <strong>86 169 profilov</strong> a <strong>23 023 inzerátov</strong> od spustenia. Senior care má najlepší pomer ponuka/profil <strong>49,8 %</strong> — najaktívnejší segment. Doučovanie: 10 337 profilov, len 13,4 % konverzia na ponuku + 1,5 % CTR na webe — dvojitá príležitosť. <strong>Len 26,7 % helperov má aktívny inzerát</strong> — onboarding/aktivácia je kľúčová výzva.
+  </div>
+</div>
+
+<!-- TAB 5: RETENTION -->
+<div class="panel" id="tab-retention">
+
+  <div class="section-title">Repeat purchase — celkový prehľad (all time)</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Repeat purchase rate</div>
+      <div class="kpi-value">16,24 %</div>
+      <div class="kpi-sub">9 410 / 57 930 platiacich</div>
+      <div class="kpi-note">kúpili 2× a viac (all time)</div>
+    </div>
+    <div class="kpi-card" style="--accent:#f87171">
+      <div class="kpi-label">Jednorazový nákup (churn)</div>
+      <div class="kpi-value">83,8 %</div>
+      <div class="kpi-sub">48 520 používateľov — kúpili len 1×</div>
+      <div class="kpi-note">hlavná výzva platformy</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Lojálni zákazníci (10+)</div>
+      <div class="kpi-value">560</div>
+      <div class="kpi-sub">10 a viac objednávok / user</div>
+      <div class="kpi-note">1 % z platiacich · silné core</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Returning buyers 2026</div>
+      <div class="kpi-value">46,8 %</div>
+      <div class="kpi-sub">277 z 592 kupujúcich v 2026</div>
+      <div class="kpi-note">mali 2+ nákupov historically</div>
+    </div>
+  </div>
+
+  <div class="section-title">Čas návratu — interval medzi 1. a 2. objednávkou (all time)</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#4ade80">
+      <div class="kpi-label">Medián návratu</div>
+      <div class="kpi-value">119 dní</div>
+      <div class="kpi-sub">medián medzi obj. 1 a 2</div>
+      <div class="kpi-note">priemer 318,6 dní (skreslený)</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="kpi-label">Návrat do 30 dní</div>
+      <div class="kpi-value">2 024</div>
+      <div class="kpi-sub">21,5 % z repeat zákazníkov</div>
+      <div class="kpi-note">rýchla obnova predplatného</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fbbf24">
+      <div class="kpi-label">Návrat 30 – 90 dní</div>
+      <div class="kpi-value">1 956</div>
+      <div class="kpi-sub">20,8 % z repeat zákazníkov</div>
+      <div class="kpi-note">okno pre reaktivačné kampane</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="kpi-label">Návrat 365+ dní</div>
+      <div class="kpi-value">2 291</div>
+      <div class="kpi-sub">24,3 % z repeat zákazníkov</div>
+      <div class="kpi-note">sezónny / jednorazový segment</div>
+    </div>
+  </div>
+
+  <div class="section-title">Rozloženie návratu — okná (9 410 repeat customers)</div>
+  <div class="block">
+    <table class="data-table">
+      <thead>
+        <tr><th>Časové okno návratu</th><th class="num">Počet použ.</th><th class="num">Podiel</th><th>Bar</th><th>Interpretácia</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>⚡ Do 30 dní</td><td class="num hl">2 024</td><td class="num">21,5 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:35px"></div></div></td><td><span class="dim">okamžitá obnova / mesačné predp.</span></td></tr>
+        <tr><td>📅 30 – 90 dní</td><td class="num">1 956</td><td class="num">20,8 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:34px"></div></div></td><td><span class="dim">reaktivačné okno — cielená kampaň</span></td></tr>
+        <tr><td>📆 90 – 180 dní</td><td class="num">1 584</td><td class="num">16,8 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:27px"></div></div></td><td><span class="dim">sezónny návrat (leto/jeseň)</span></td></tr>
+        <tr><td>🗓 180 – 365 dní</td><td class="num">1 555</td><td class="num">16,5 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:27px"></div></div></td><td><span class="dim">ročný cyklus potrieb</span></td></tr>
+        <tr><td>⏳ 365+ dní</td><td class="num">2 291</td><td class="num">24,3 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:39px"></div></div></td><td><span class="dim">dlhodobý / sezónny segment</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Návratnosť podľa segmentu (repeat customers)</div>
+  <div class="block">
+    <table class="data-table">
+      <thead>
+        <tr><th>Segment</th><th class="num">Repeat zákazníci</th><th class="num">Priem. dni (1→2)</th><th class="num">Medián dní (1→2)</th><th>Interpretácia</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge bg">FAMILY</span></td>
+          <td class="num hl">5 341</td><td class="num">468,6 dní</td><td class="num">228,6 dní</td>
+          <td><span class="dim">dlhý interval — sezónna potreba, návrat cca za 7 mes.</span></td>
+        </tr>
+        <tr>
+          <td><span class="badge ba">AGENCY</span></td>
+          <td class="num">120</td><td class="num">130,8 dní</td><td class="num hl">65,2 dní</td>
+          <td><span class="dim">najrýchlejší návrat — profesionálne / kontinuálne potreby</span></td>
+        </tr>
+        <tr>
+          <td><span class="badge bb">HELPER</span></td>
+          <td class="num">3 948</td><td class="num">121,5 dní</td><td class="num hl">31,9 dní</td>
+          <td><span class="dim">rýchla obnova — mesačné predplatné, aktívni brigádnici</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Distribúcia objednávok na používateľa (all time)</div>
+  <div class="block">
+    <table class="data-table">
+      <thead>
+        <tr><th>Počet objednávok / user</th><th class="num">Používateľov</th><th class="num">Podiel</th><th>Bar</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1 objednávka <span class="dim">(jednorazový)</span></td><td class="num">48 520</td><td class="num">83,8 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:72px;background:#f87171"></div></div></td></tr>
+        <tr><td>2 objednávky</td><td class="num">4 395</td><td class="num">7,6 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:7px"></div></div></td></tr>
+        <tr><td>3 objednávky</td><td class="num">1 926</td><td class="num">3,3 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:4px"></div></div></td></tr>
+        <tr><td>4 objednávky</td><td class="num">1 001</td><td class="num">1,7 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:2px"></div></div></td></tr>
+        <tr><td>5 objednávok</td><td class="num">548</td><td class="num">0,9 %</td><td></td></tr>
+        <tr><td>6 objednávok</td><td class="num">396</td><td class="num">0,7 %</td><td></td></tr>
+        <tr><td>7 objednávok</td><td class="num">251</td><td class="num">0,4 %</td><td></td></tr>
+        <tr><td>8 objednávok</td><td class="num">202</td><td class="num">0,3 %</td><td></td></tr>
+        <tr><td>9 objednávok</td><td class="num">131</td><td class="num">0,2 %</td><td></td></tr>
+        <tr><td>≥ 10 objednávok <span class="dim">(lojálni)</span></td><td class="num hl">560</td><td class="num hl">1,0 %</td><td><div class="bar-bg"><div class="bar-fill" style="width:1px;background:#fbbf24"></div></div></td></tr>
+        <tr style="border-top:1px solid #2a3550">
+          <td><strong>SPOLU platiacich</strong></td><td class="num hl">57 930</td><td class="num">100 %</td><td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight">
+    <strong>Retention insighty:</strong><br>
+    • <strong>83,8 % zákazníkov kúpi len raz</strong> — to je hlavná churnová výzva. Zlepšenie o 5 pp by znamenalo ~2 900 ďalších repeat zákazníkov<br>
+    • <strong>HELPER medián návratu 31,9 dní</strong> — prirodzene obnovujú mesačné predplatné, vhodní na automatické pripomienky<br>
+    • <strong>FAMILY medián 228,6 dní</strong> (~7 mes.) — sezónny charakter (letné prázdniny, škola). Reaktivačná kampaň v auguste/januári má zmysel<br>
+    • <strong>42 % repeat customers sa vráti do 60 dní</strong> — toto je kľúčové okno pre retention e-mail/push<br>
+    • <strong>560 super-lojálnych (10+ obj.)</strong> — VIP segment na ocenenie a ambasádorský program<br>
+    • 277 / 592 kupujúcich v 2026 (46,8 %) sú vracajúci sa — zdravý signál existujúcej loajality
+  </div>
+</div>
+
+<script>
+function sw(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Sparkline revenue
+(function(){
+  const data=[
+    {m:'Jan',v:1675.80,c:'#4ade80'},
+    {m:'Feb',v:1310.84,c:'#60a5fa'},
+    {m:'Mar',v:1445.87,c:'#4ade80'},
+    {m:'Apr',v:1957.60,c:'#4ade80'},
+    {m:'Máj*',v:491.92,c:'#4b5680'},
+  ];
+  const maxV=Math.max(...data.map(d=>d.v));
+  const wrap=document.getElementById('sparkWrap');
+  if(!wrap) return;
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:flex-end;gap:5px;height:44px;margin-bottom:4px';
+  const labelRow=document.createElement('div');
+  labelRow.style.cssText='display:flex;gap:5px';
+  data.forEach(d=>{
+    const h=Math.max(4,Math.round((d.v/maxV)*40));
+    const col=document.createElement('div');
+    col.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center';
+    const bar=document.createElement('div');
+    bar.style.cssText='width:100%;border-radius:3px 3px 0 0;background:'+d.c+';opacity:.8;height:'+h+'px;cursor:default';
+    bar.title=d.m+': '+d.v.toFixed(0)+' €';
+    bar.onmouseover=function(){this.style.opacity='1'};
+    bar.onmouseout=function(){this.style.opacity='.8'};
+    const lbl=document.createElement('div');
+    lbl.style.cssText='font-size:9px;color:#4b5680;margin-top:3px;text-align:center';
+    lbl.textContent=d.m;
+    col.appendChild(bar);
+    row.appendChild(col);
+    const lc=document.createElement('div');
+    lc.style.cssText='flex:1;text-align:center;font-size:9px;color:#4b5680;';
+    lc.textContent=d.m;
+    labelRow.appendChild(lc);
+  });
+  wrap.appendChild(row);
+})();
+</script>
+</body>
+</html>
